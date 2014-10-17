@@ -27,7 +27,7 @@
             	text-size-adjust: none;
                 overflow: hidden;
                 border: 1px solid black;
-                height: 400px
+                height: 360px
             }
 
             #scroller ul {
@@ -108,10 +108,16 @@
             var test2 = window.test = avalon.define('test2', function(vm) {
                 vm.arr = [];
                 vm.arr$ = [];
-                vm.dataset = function(start, count) {
-                    for (var i = vm.arr.length; i < start + count; i ++) {
-                        vm.arr.push({name : 'item-' + i});
-                    }
+                vm.getData = function(start, count) {
+                    console.log('加载数据: start = ' + start + ' count = ' + count);
+                    setTimeout(function() {
+                        console.log('加载完成');
+                        for (var i = vm.arr.length; i < start + count; i ++) {
+                            vm.arr.push({
+                                name : 'item-' + (i + 1)
+                            });
+                        }
+                    }, 1000);
                 };
                 vm.view = function(el) {
                     el.name += '#';

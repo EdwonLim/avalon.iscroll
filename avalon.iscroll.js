@@ -4,7 +4,8 @@ define([
     './lib/iscroll-infinite'
 ], function(avalon) {
 
-    var events = ['beforeScrollStart', 'scrollCancel', 'scrollStart', 'scroll', 'scrollEnd', 'flick', 'zoomStart', 'zoomEnd'];
+    var events = ['beforeScrollStart', 'scrollCancel', 'scrollStart', 'scroll', 'scrollEnd', 'flick', 'zoomStart', 'zoomEnd'],
+        refreshTimeout = 100;
 
     function makeArray(length) { // jshint ignore:line
         var ret = [];
@@ -43,7 +44,7 @@ define([
             vm.scrolls = vm.scrolls || {};
 
             if (eachAttr || repeatAttr) {
-                var name, realName,
+                var name, realName, timer,
                     listenerLogs = makeArray(options.showLines);
 
                 if (eachAttr) {
@@ -60,20 +61,29 @@ define([
                 realName = name + '$';
 
                 avalon.mix(options, {
-                    dataset: getFunc('dataset', vmodels),
+                    dataset: avalon.noop,
                     dataFiller: function(el, data) {
                         var index = el.dataset.index,
+                            arr = vm[name],
+                            newArr = vm[realName],
                             prevData = listenerLogs[index];
-                        vm[realName][index].$unwatch();
-                        vm[name][prevData].$unwatch();
-                        vm[realName].set(index, vm[name][data]);
-                        vm[realName][index].$watch('$all', function(key, value) {
-                            vm[name][data][key] = value;
-                        });
-                        vm[name][data].$watch('$all', function(key, value) {
-                            vm[realName][index][key] = value;
-                        });
-                        listenerLogs[el.dataset.index] = data;
+                        if (newArr[index]) {
+                            newArr[index].$unwatch();
+                        }
+                        arr[prevData].$unwatch();
+                        if (data !== void 0) {
+                            newArr.set(index, arr[data]);
+                            newArr[index].$watch('$all', function(key, value) {
+                                arr[data][key] = value;
+                            });
+                            arr[data].$watch('$all', function(key, value) {
+                                newArr[index][key] = value;
+                            });
+                            listenerLogs[el.dataset.index] = data;
+                        }
+                        if (arr.length - 1 == data) {
+                            getFunc('getData', vmodels)(arr.length, options.cacheSize);
+                        }
                     }
                 });
 
@@ -85,6 +95,19 @@ define([
                     scroll.updateCache(0, makeArray(options.infiniteLimit));
                     bindEvents(vmodels, scroll);
                     vm.$unwatch(name);
+                });
+
+                vm[name].$watch('length', function(value) {
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                    timer = setTimeout(function() {
+                        if (scroll) {
+                            scroll.options.infiniteLimit = value;
+                            scroll.updateCache(0, makeArray(value));
+                            scroll.refresh();
+                        }
+                    }, refreshTimeout);
                 });
 
             } else {
@@ -102,7 +125,8 @@ define([
     };
 
     widget.defaults = {
-        infiniteLimit: 20000,
+        mouseWheel: true,
+        infiniteLimit: 25,
         cacheSize: 25,
         showLines: 10
     };
