@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <title>Avalon.iScroll Test</title>
         <script src="../lib/avalon.modern.js"></script>
+        <script src="../lib/iscroll-infinite.js"></script>
         <style>
             #scroller {
             	position: absolute;
@@ -62,7 +63,7 @@
     <body>
         <h2>Test1</h2>
         <div ms-controller="test1">
-            <div style="height: 200px; overflow:hidden;" ms-widget="scroll,scroll1">
+            <div style="height: 200px; overflow:hidden;" ms-iscroll="scroll1">
                 <ul>
                     <li>a</li>
                     <li>b</li>
@@ -89,7 +90,7 @@
         </div>
         <h2>Test2</h2>
         <div ms-controller="test2">
-            <div id="scroller" ms-widget="scroll,scroll2" data-scroll-infinite-elements='#scroller ul li'>
+            <div id="scroller" ms-iscroll='scroll2'>
                 <ul>
                     <li ms-repeat="arr" ms-on-tap="view(el)">{{el.name}}</li>
                 </ul>
@@ -108,6 +109,11 @@
             var test2 = window.test = avalon.define('test2', function(vm) {
                 vm.arr = [];
                 vm.arr$ = [];
+                vm.scroll2Options = {
+                    infiniteElements: '#scroller ul li',
+                    infiniteLimit: 25,
+                    showLines: 10
+                };
                 vm.getData = function(start, count) {
                     console.log('加载数据: start = ' + start + ' count = ' + count);
                     setTimeout(function() {
@@ -123,7 +129,7 @@
                     el.name += '#';
                 };
                 vm.scrollStart = function() {
-                    // console.log('scrollStart', vm.scrolls.scroll2, this);
+                    console.log('scrollStart', vm.scrolls.scroll2, this);
                 };
             });
             setTimeout(function() {
