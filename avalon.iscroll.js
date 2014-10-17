@@ -160,7 +160,7 @@ define(['avalon'], function(avalon) {
                         }
                         if (arr.length - 1 == data) {
                             getData = getFunc(options.getData || 'getData', vmodels);
-                            if (avalon.isFunction(getData)) {
+                            if (getData) {
                                 getData(arr.length, options.cacheSize);
                             }
                         }
