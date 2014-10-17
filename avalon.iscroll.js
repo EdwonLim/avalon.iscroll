@@ -2,7 +2,7 @@ define(['avalon'], function(avalon) {
 
     var DEFAULT_OPT = {
         mouseWheel: true,
-        canInfinite: true,
+        canInfinite: false,
         infiniteLimit: 25,
         cacheSize: 25,
         showLines: 10
