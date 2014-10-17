@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Avalon.iScroll Test</title>
+        <script src="../lib/avalon.modern.js"></script>
+        <style>
+            #scroller {
+            	position: absolute;
+            	z-index: 1;
+            	-webkit-tap-highlight-color: rgba(0,0,0,0);
+            	width: 100%;
+            	-webkit-transform: translateZ(0);
+            	-moz-transform: translateZ(0);
+            	-ms-transform: translateZ(0);
+            	-o-transform: translateZ(0);
+            	transform: translateZ(0);
+            	-webkit-touch-callout: none;
+            	-webkit-user-select: none;
+            	-moz-user-select: none;
+            	-ms-user-select: none;
+            	user-select: none;
+            	-webkit-text-size-adjust: none;
+            	-moz-text-size-adjust: none;
+            	-ms-text-size-adjust: none;
+            	-o-text-size-adjust: none;
+            	text-size-adjust: none;
+                overflow: hidden;
+                border: 1px solid black;
+                height: 400px
+            }
+
+            #scroller ul {
+            	list-style: none;
+            	padding: 0;
+            	margin: 0;
+            	width: 100%;
+            	text-align: left;
+            	position: relative;
+            }
+
+            #scroller li {
+            	position: absolute;
+            	width: 100%;
+            	top: 0;
+            	left: 0;
+            	-webkit-transform: translateZ(0);
+            	-moz-transform: translateZ(0);
+            	-ms-transform: translateZ(0);
+            	-o-transform: translateZ(0);
+            	transform: translateZ(0);
+            	padding: 0 10px;
+            	height: 40px;
+            	line-height: 40px;
+            	border-bottom: 1px solid #ccc;
+            	border-top: 1px solid #fff;
+            	background-color: #fafafa;
+            	font-size: 16px;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Test1</h2>
+        <div ms-controller="test1">
+            <div style="height: 200px; overflow:hidden;" ms-widget="scroll,scroll1">
+                <ul>
+                    <li>a</li>
+                    <li>b</li>
+                    <li>c</li>
+                    <li>d</li>
+                    <li>e</li>
+                    <li>f</li>
+                    <li>g</li>
+                    <li>h</li>
+                    <li>i</li>
+                    <li>j</li>
+                    <li>k</li>
+                    <li>l</li>
+                    <li>m</li>
+                    <li>n</li>
+                    <li>o</li>
+                    <li>p</li>
+                    <li>q</li>
+                    <li>r</li>
+                    <li>s</li>
+                    <li>{{text}}</li>
+                </ul>
+            </div>
+        </div>
+        <h2>Test2</h2>
+        <div ms-controller="test2">
+            <div id="scroller" ms-widget="scroll,scroll2" data-scroll-infinite-elements='#scroller ul li'>
+                <ul>
+                    <li ms-repeat="arr" ms-on-tap="view(el)">{{el.name}}</li>
+                </ul>
+            </div>
+        </div>
+    </body>
+    <script>
+
+        require("../avalon.iscroll", function(avalon) {
+            var test1 = avalon.define('test1', function(vm) {
+                vm.text = 'bottom';
+                vm.scrollStart = function() {
+                    // console.log('scrollStart', vm.scrolls.scroll1, this);
+                };
+            });
+            var test2 = window.test = avalon.define('test2', function(vm) {
+                vm.arr = [];
+                vm.arr$ = [];
+                vm.dataset = function(start, count) {
+                    for (var i = vm.arr.length; i < start + count; i ++) {
+                        vm.arr.push({name : 'item-' + i});
+                    }
+                };
+                vm.view = function(el) {
+                    el.name += '#';
+                };
+                vm.scrollStart = function() {
+                    // console.log('scrollStart', vm.scrolls.scroll2, this);
+                };
+            });
+            setTimeout(function() {
+                test2.arr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25].map(function(item){
+                    return {
+                        name: 'item-' + item
+                    };
+                });
+            }, 500);
+            avalon.scan();
+        });
+    </script>
+</html>
