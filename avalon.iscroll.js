@@ -1,14 +1,14 @@
 define(['avalon'], function(avalon) {
 
     var DEFAULT_OPT = {
-        mouseWheel: true,
-        infiniteLimit: 25,
-        cacheSize: 25,
-        showLines: 10,
-        emplty: {
-            exists: false
-        }
-    },
+            mouseWheel: true,
+            infiniteLimit: 25,
+            cacheSize: 25,
+            showLines: 10,
+            emplty: {
+                exists: false
+            }
+        },
         events = ['beforeScrollStart', 'scrollCancel', 'scrollStart', 'scroll', 'scrollEnd', 'flick', 'zoomStart', 'zoomEnd'],
         refreshTimeout = 100;
 
@@ -48,14 +48,6 @@ define(['avalon'], function(avalon) {
         return null;
     }
 
-    function makeArray(length) {
-        var ret = [];
-        for (var i = 0; i< length; i ++) {
-            ret.push(i);
-        }
-        return ret;
-    }
-
     function getFunc(name, vmodels) {
         var changeVM = getModel(name, vmodels);
         return changeVM && changeVM[1][changeVM[0]];
@@ -76,43 +68,13 @@ define(['avalon'], function(avalon) {
         });
     }
 
-    function format(data, isDecode){
-        return isDecode ? decodeURIComponent(data) : data;
-    }
-
-    function queryToJson(qs, isDecode){
-        var qList = qs.trim().split("&"),
-            json = {},
-            i = 0,
-            len = qList.length;
-
-        for (; i < len; i++) {
-            if (qList[i]) {
-                var hash = qList[i].split("="),
-                    key = hash[0],
-                    value = hash[1];
-                // 如果只有key没有value, 那么将全部丢入一个$nullName数组中
-                if (hash.length < 2) {
-                    value = key;
-                    key = '$nullName';
-                }
-                if (!(key in json)) {
-                    // 如果缓存堆栈中没有这个数据，则直接存储
-                    json[key] = format(value, isDecode);
-                } else {
-                    // 如果堆栈中已经存在这个数据，则转换成数组存储
-                    json[key] = [].concat(json[key], format(value, isDecode));
-                }
-            }
-        }
-        return json;
-    }
-
     if (IScroll) {
         avalon.bindingHandlers.iscroll = function(data, vmodels) {
+            console.log(data);
             var element = data.element,
+                args = data.param.match(/[^, ]+/g),
                 vm = vmodels[0],
-                options = avalon.mix({}, DEFAULT_OPT, queryToJson(data.param), vm[data.value + 'Options']),
+                options = avalon.mix({}, DEFAULT_OPT, vm[args && args[1]] || vm[data.value + 'Options']),
                 son = element.children[0],
                 grandSon = element.children[0] && element.children[0].children[0],
                 eachAttr = son && getAttr(son, 'ms-each'),
@@ -123,7 +85,7 @@ define(['avalon'], function(avalon) {
 
             if (eachAttr || repeatAttr) {
                 var name, realName, timer,
-                    listenerLogs = makeArray(options.showLines);
+                    listenerLogs = avalon.range(0, options.showLines - 1);
 
                 if (eachAttr) {
                     name = son.getAttribute(eachAttr);
@@ -174,7 +136,7 @@ define(['avalon'], function(avalon) {
                         newArr = vm[realName],
                         i;
                     if (scroll) {
-                        listenerLogs = makeArray(options.showLines);
+                        listenerLogs = avalon.range(0, options.showLines - 1);
                         newArr.forEach(function(item) {
                             item.$unwatch();
                         });
@@ -205,7 +167,7 @@ define(['avalon'], function(avalon) {
                     } else {
                         newArr.pushArray(vm.$model[name].slice(0, options.showLines));
                         scroll = vm.scrolls[data.value] = new IScroll(element, options);
-                        scroll.updateCache(0, makeArray(options.infiniteLimit));
+                        scroll.updateCache(0, avalon.range(0, options.infiniteLimit - 1));
                         bindEvents(vmodels, options, scroll);
                     }
                 });
@@ -217,7 +179,7 @@ define(['avalon'], function(avalon) {
                     timer = setTimeout(function() {
                         if (scroll) {
                             scroll.options.infiniteLimit = value;
-                            scroll.updateCache(0, makeArray(value));
+                            scroll.updateCache(0, avalon.range(0, value - 1));
                             scroll.refresh();
                         }
                     }, refreshTimeout);
