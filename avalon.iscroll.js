@@ -70,7 +70,6 @@ define(['avalon'], function(avalon) {
 
     if (IScroll) {
         avalon.bindingHandlers.iscroll = function(data, vmodels) {
-            console.log(data);
             var element = data.element,
                 args = data.param.match(/[^, ]+/g),
                 vm = vmodels[0],
