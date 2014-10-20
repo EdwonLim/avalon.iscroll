@@ -84,7 +84,7 @@ define(['avalon'], function(avalon) {
 
             if (eachAttr || repeatAttr) {
                 var name, realName, timer,
-                    listenerLogs = avalon.range(0, options.showLines - 1);
+                    listenerLogs = avalon.range(0, options.showLines);
 
                 if (eachAttr) {
                     name = son.getAttribute(eachAttr);
@@ -135,7 +135,7 @@ define(['avalon'], function(avalon) {
                         newArr = vm[realName],
                         i;
                     if (scroll) {
-                        listenerLogs = avalon.range(0, options.showLines - 1);
+                        listenerLogs = avalon.range(0, options.showLines);
                         newArr.forEach(function(item) {
                             item.$unwatch();
                         });
@@ -166,7 +166,7 @@ define(['avalon'], function(avalon) {
                     } else {
                         newArr.pushArray(vm.$model[name].slice(0, options.showLines));
                         scroll = vm.scrolls[data.value] = new IScroll(element, options);
-                        scroll.updateCache(0, avalon.range(0, options.infiniteLimit - 1));
+                        scroll.updateCache(0, avalon.range(0, options.infiniteLimit));
                         bindEvents(vmodels, options, scroll);
                     }
                 });
@@ -178,7 +178,7 @@ define(['avalon'], function(avalon) {
                     timer = setTimeout(function() {
                         if (scroll) {
                             scroll.options.infiniteLimit = value;
-                            scroll.updateCache(0, avalon.range(0, value - 1));
+                            scroll.updateCache(0, avalon.range(0, value));
                             scroll.refresh();
                         }
                     }, refreshTimeout);
