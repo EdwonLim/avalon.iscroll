@@ -112,7 +112,10 @@
                 vm.scroll2Options = {
                     infiniteElements: '#scroller ul li',
                     infiniteLimit: 25,
-                    showLines: 10
+                    showLines: 10,
+                    empty: {
+                        name: ''
+                    }
                 };
                 vm.getData = function(start, count) {
                     console.log('加载数据: start = ' + start + ' count = ' + count);
@@ -129,7 +132,7 @@
                     el.name += '#';
                 };
                 vm.scrollStart = function() {
-                    console.log('scrollStart', vm.scrolls.scroll2, this);
+                    // console.log('scrollStart', vm.scrolls.scroll2, this);
                 };
             });
             setTimeout(function() {

@@ -2,10 +2,12 @@ define(['avalon'], function(avalon) {
 
     var DEFAULT_OPT = {
         mouseWheel: true,
-        canInfinite: false,
         infiniteLimit: 25,
         cacheSize: 25,
-        showLines: 10
+        showLines: 10,
+        emplty: {
+            exists: false
+        }
     },
         events = ['beforeScrollStart', 'scrollCancel', 'scrollStart', 'scroll', 'scrollEnd', 'flick', 'zoomStart', 'zoomEnd'],
         refreshTimeout = 100;
@@ -119,7 +121,7 @@ define(['avalon'], function(avalon) {
 
             vm.scrolls = vm.scrolls || {};
 
-            if (options.canInfinite && (eachAttr || repeatAttr) ) {
+            if (eachAttr || repeatAttr) {
                 var name, realName, timer,
                     listenerLogs = makeArray(options.showLines);
 
@@ -144,11 +146,11 @@ define(['avalon'], function(avalon) {
                             newArr = vm[realName],
                             prevData = listenerLogs[index],
                             getData;
-                        if (newArr[index]) {
-                            newArr[index].$unwatch();
+                        if (prevData !== void 0 && arr[prevData] && arr[prevData].$unwatch) {
+                            arr[prevData].$unwatch();
                         }
-                        arr[prevData].$unwatch();
-                        if (data !== void 0) {
+                        if (data !== void 0 && newArr[index]) {
+                            newArr[index].$unwatch();
                             newArr.set(index, arr[data]);
                             newArr[index].$watch('$all', function(key, value) {
                                 arr[data][key] = value;
@@ -168,11 +170,44 @@ define(['avalon'], function(avalon) {
                 });
 
                 vm.$watch(name, function() {
-                    vm[realName] = vm.$model[name].slice(0, options.showLines);
-                    scroll = vm.scrolls[data.value] = new IScroll(element, options);
-                    scroll.updateCache(0, makeArray(options.infiniteLimit));
-                    bindEvents(vmodels, options, scroll);
-                    vm.$unwatch(name);
+                    var arr = vm[name],
+                        newArr = vm[realName],
+                        i;
+                    if (scroll) {
+                        listenerLogs = makeArray(options.showLines);
+                        newArr.forEach(function(item) {
+                            item.$unwatch();
+                        });
+                        for (i = 0; i < options.showLines; i ++) {
+                            if (arr.length > i) {
+                                if (newArr[i]) {
+                                    newArr.set(i, arr[i].$model);
+                                } else {
+                                    newArr.push(arr[i].$model);
+                                }
+                                newArr[i].$watch('$all', (function(index) {
+                                    return function(key, value) {
+                                        arr[index][key] = value;
+                                    };
+                                })(i));  // jshint ignore:line
+                                arr[i].$watch('$all', (function(index) {
+                                    return function(key, value) {
+                                        newArr[index][key] = value;
+                                    };
+                                })(i));  // jshint ignore:line
+                            } else {
+                                newArr.set(i, options.empty);
+                            }
+                        }
+                        scroll.options.infiniteLimit = options.infiniteLimit;
+                        scroll.scrollTo(0, 0, 0);
+                        scroll.refresh();
+                    } else {
+                        newArr.pushArray(vm.$model[name].slice(0, options.showLines));
+                        scroll = vm.scrolls[data.value] = new IScroll(element, options);
+                        scroll.updateCache(0, makeArray(options.infiniteLimit));
+                        bindEvents(vmodels, options, scroll);
+                    }
                 });
 
                 vm[name].$watch('length', function(value) {
