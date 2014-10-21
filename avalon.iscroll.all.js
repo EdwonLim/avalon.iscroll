@@ -2,7 +2,9 @@
  *
  * Avalon IScroll 移动套件
  *
+ * verison: @lastest 0.1.0
  * GitHub: http://github.com/EdwonLim/avalon.iscroll
+ * IScorll GitHub: https://github.com/cubiq/iscroll
  *
  * Mode By Edwon Lim (edwon.lim@gmail.com | http://github.com/EdwonLim/)
  *
