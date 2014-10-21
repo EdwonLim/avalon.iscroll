@@ -98,7 +98,8 @@ define(['avalon'], function(avalon) {
             var element = data.element, // 绑定的 dom 节点
                 args = data.param.match(/[^, ]+/g), // 分析参数，用逗号分割，第一个为配置所对应的参数key（后面的参数以后拓展）
                 vm = vmodels[0], // 获取 VM
-                options = avalon.mix({}, DEFAULT_OPT, vm[args && args[1]] || vm[data.value + 'Options']), // merge 配置 (默认的配置项的key是 id + 'Options')
+                options = avalon.mix({}, DEFAULT_OPT, vm.iscroll, element.dataset, args ? vm[args[0]] : null), // merge 配置
+                id = options.id || (data.value == '$' || !data.value ?  'iscroll' + setTimeout('1') : data.value), // jshint ignore:line
                 son = element.children[0], // 儿子节点
                 grandSon = element.children[0] && element.children[0].children[0], // 孙子节点
                 eachAttr = son && getAttr(son, 'ms-each'), // 儿子节点是否有 ms-each
@@ -218,7 +219,7 @@ define(['avalon'], function(avalon) {
                         // 配置数据和属性，创建 iScroll 对象
                         options.infiniteElements = options.infiniteElements || son.children; // 循环元素的选择器 或者 NodeList
                         newArr.pushArray(vm.$model[name].slice(0, options.showLines)); // 初始化僵尸数组的数据
-                        scroll = vm.scrolls[data.value] = new IScroll(element, options); // 创建 IScroll 对象
+                        scroll = vm.scrolls[id] = new IScroll(element, options); // 创建 IScroll 对象
                         scroll.updateCache(0, avalon.range(0, options.infiniteLimit)); // 给 IScroll 输入数据 (其实是原数组的索引)
                         bindEvents(vmodels, options, scroll); // 绑定事件
                     }
@@ -241,7 +242,7 @@ define(['avalon'], function(avalon) {
 
             } else {
                 // 普通创建 IScroll
-                scroll = vm.scrolls[data.value] = new IScroll(element, options);
+                scroll = vm.scrolls[id] = new IScroll(element, options);
                 bindEvents(vmodels, options, scroll);
             }
 

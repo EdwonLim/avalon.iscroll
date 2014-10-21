@@ -21,7 +21,9 @@ IScroll GitHub & Documents: [https://github.com/cubiq/iscroll](https://github.co
 > ms-iscroll="id, optName"
 
 - `id`: 将通过`id`挂在`vmodel`的`scrolls`对象上，便于用户访问`IScroll`对象。
-- `optName`: 配置属性的名称，在`vmodel`上寻找对应的属性值，作为配置。默认值为：`id + 'Options'`
+- `optName`: 配置属性的名称，在`vmodel`上寻找对应的属性值，作为配置。
+
+PS： `id`可用`$`占位，`options`也可使用`data-optionKey='optionValue'`和`vm.iscroll`配置，类似于`widget`配置方式。
 
 *注：实际参数请参看`IScroll`文档。*
 

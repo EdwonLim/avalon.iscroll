@@ -63,7 +63,7 @@
     <body>
         <h2>Avlon IScroll Test</h2>
         <div ms-controller="test">
-            <div id="scroller" ms-iscroll='scroll2'>
+            <div id="scroller" ms-iscroll='$'>
                 <ul>
                     <li ms-repeat="arr" ms-on-tap="view(el)">{{el.name}}</li>
                 </ul>
@@ -76,7 +76,8 @@
             var test = window.test = avalon.define('test', function(vm) {
                 vm.arr = [];
                 vm.arr$ = [];
-                vm.scroll2Options = {
+                vm.iscroll = {
+                    id: 'scrollTest',
                     // infiniteElements: '#scroller ul li',
                     infiniteLimit: 25,
                     showLines: 10,
