@@ -6,6 +6,8 @@ verison: @lastest 0.1.0
 
 GitHub: [http://github.com/EdwonLim/avalon.iscroll](http://github.com/EdwonLim/avalon.iscroll)
 
+Avalon GitHub & Documents: [https://github.com/RubyLouvre/avalon](https://github.com/RubyLouvre/avalon)
+
 IScroll GitHub & Documents: [https://github.com/cubiq/iscroll](https://github.com/cubiq/iscroll)
 
 #### 1. 简介
