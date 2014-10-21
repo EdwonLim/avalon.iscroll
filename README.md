@@ -26,7 +26,9 @@ IScroll GitHub & Documents: [https://github.com/cubiq/iscroll](https://github.co
 *注：实际参数请参看`IScroll`文档。*
 
 示例：
+
 `HTML` :
+
 ```html
     <div ms-controller="test">
         <div ms-iscroll="scroll1, $opt">
@@ -37,7 +39,9 @@ IScroll GitHub & Documents: [https://github.com/cubiq/iscroll](https://github.co
         </div>
     </div>
 ```
+
 `JS` :
+
 ```js
     require('avalon.iscroll.js', function(avalon) {
 
@@ -60,9 +64,9 @@ IScroll GitHub & Documents: [https://github.com/cubiq/iscroll](https://github.co
 
 ##### 3.1. 为什么用`infinite`滚动？和一般的`infinite`滚动有何区别？
 
-无限滚动，滚到最后加载新数据，在移动端体验比较好。
+- 无限滚动，滚到最后加载新数据，在移动端体验比较好。
 
-`iscroll`提供的`infinite`，使用`translate`进行位移，所以在滚动时，没有进行`dom`的增添，只是修改某一个节点`dom`，重绘的范围比较小，从而保证在移动端的执行效率和内存使用量。并且`avalon`通过`model`操作`view`的方式，非常有利于`dom`节点的数据重新渲染。
+- `iscroll`提供的`infinite`，使用`translate`进行位移，所以在滚动时，没有进行`dom`的增添，只是修改某一个节点`dom`，重绘的范围比较小，从而保证在移动端的执行效率和内存使用量。并且`avalon`通过`model`操作`view`的方式，非常有利于`dom`节点的数据重新渲染。
 
 ##### 3.2. 特殊配置
 
