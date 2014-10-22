@@ -84,6 +84,7 @@ PS： `id`可用`$`占位，`options`也可使用`data-optionKey='optionValue'`�
         getData: function(start, count) {
             // 加载更多数据的回调
             // 获取数据后，更新源数组即可
+            // 同时会触发 el 的 getdata 事件
         }
     }
 ```
