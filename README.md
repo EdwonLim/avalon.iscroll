@@ -81,22 +81,13 @@ PS： `id`可用`$`占位，`options`也可使用`data-optionKey='optionValue'`�
         mouseWheel: false, // 是否支持鼠标滚轮（提出来方便测试）
         infiniteLimit: 25, // 数量极限（到达极限时，会调用getData方法）
         cacheSize: 25, // 缓存数量
-        empty: { // 默认的空对象
-            exists: false
-        }
     }
 ```
 
-其中 `showLines` 和 `empty` 是 `ms-iscroll` 特殊配置，其他都是`iscroll`配置。
+其中 `showLines` 是 `ms-iscroll` 特殊配置，其他都是`iscroll`配置。
 
 - `showLines`: 一屏显示的数量。
-- `empty`: 当数据总数不足一屏时，其他数据`set`为此对象。（PS：`empty`里的属性，应该是原本可监控的，否则监控不到）
 
-> *用户可以监控属性，把没用的元素`dom`隐藏*
-
-> *为什么不直接删除数据？在这里支持了数据刷新，如果因为数据少，把无用`dom`删了，之后数据刷新以后，数量够了，那么就出现问题，具体原因是由`iscroll`的`infinite`机制造成的。*
-
-> *以后会更改iscroll源码，修复这个问题*
 
 ##### 3.3. 注意事项
 
@@ -111,3 +102,9 @@ PS： `id`可用`$`占位，`options`也可使用`data-optionKey='optionValue'`�
 ```
 
 - 对于`Dom`结构，需要满足`iscroll-infinite`，**需要所有`item`的绝对位置是相同的**，组简单的实现是，把`item`的`position`设为`absolute`。
+
+##### 更改的`scroll-infinite`源码：
+
+- `688`行： 增加 `this._initInfinite();` 让 `scroll` 刷新时，也更新 `infinite`。
+- `1433`/`1434`行： 从 `this.infiniteElementHeight = this.infiniteMaster.offsetHeight` 改为 `this.infiniteElementHeight = this.infiniteMaster ? this.infiniteMaster.offsetHeight : 0;` ，支持空数据。
+- `1443`/`1444`行： 从 `this.infiniteUpperBufferSize = Math.floor((this.infiniteLength - elementsPerPage) / 2);` 改为 `this.infiniteUpperBufferSize = 0;` 。原来如果行数不足，会把列表居中，现在改为置顶。
