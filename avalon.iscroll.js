@@ -27,12 +27,6 @@ define(['avalon'], function(avalon) {
     // 刷新 Scroll 的间隔
     refreshTimeout = 100;
 
-    // 获取 VM 对象内的对应方法
-    function getFunc(name, vmodels) {
-        var changeVM = getModel(name, vmodels);
-        return changeVM && changeVM[1][changeVM[0]];
-    }
-
     // 获取 dom 节点上的相应属性和值
     function getAttr(el, attrName) {
         return ((el.hasAttributes() ? avalon.slice(el.attributes) : []).filter(function(attr) {
@@ -132,6 +126,8 @@ define(['avalon'], function(avalon) {
                                     options.getData(arr.length, options.cacheSize);
                                 } else if (typeof options.getData === 'string' && typeof vm[options.getData] === 'function') {
                                     vm[options.getData](arr.length, options.cacheSize);
+                                } else {
+                                    dispatchEvent(element, 'getdata');
                                 }
                             }
                         }
