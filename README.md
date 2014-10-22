@@ -81,6 +81,10 @@ PS： `id`可用`$`占位，`options`也可使用`data-optionKey='optionValue'`�
         mouseWheel: false, // 是否支持鼠标滚轮（提出来方便测试）
         infiniteLimit: 25, // 数量极限（到达极限时，会调用getData方法）
         cacheSize: 25, // 缓存数量
+        getData: function(start, count) {
+            // 加载更多数据的回调
+            // 获取数据后，更新源数组即可
+        }
     }
 ```
 
@@ -88,6 +92,11 @@ PS： `id`可用`$`占位，`options`也可使用`data-optionKey='optionValue'`�
 
 - `showLines`: 一屏显示的数量。
 
+事件监听：
+
+可以在元素上监听`iscroll`的事件，例如`ms-on-scrollstart`。
+
+包含的事件有：`beforescrollstart`, `scrollcancel`, `scrollstart`, `scroll`, `scrollend`, `flick`, `zoomstart`, `zoomend`
 
 ##### 3.3. 注意事项
 
