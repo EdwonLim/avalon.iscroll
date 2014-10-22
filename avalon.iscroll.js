@@ -15,19 +15,19 @@
 define(['avalon'], function(avalon) {
 
     var DEFAULT_OPT = { // 默认配置
-            infiniteElements: null, // 重复加载的元素，最好配选择器，默认为avalon array 所绑定的元素
-            mouseWheel: false, // 是否支持鼠标滚轮（提出来方便测试）
-            infiniteLimit: 25, // 数量极限（到达极限时，会调用getData方法）
-            cacheSize: 25, // 缓存数量
-            showLines: 10, // 显示的数量
-            empty: { // 默认的空对象
-                exists: false
-            }
-        },
-        // 需要监听的事件
-        events = ['beforeScrollStart', 'scrollCancel', 'scrollStart', 'scroll', 'scrollEnd', 'flick', 'zoomStart', 'zoomEnd'],
-        // 刷新 Scroll 的间隔
-        refreshTimeout = 100;
+        infiniteElements: null, // 重复加载的元素，最好配选择器，默认为avalon array 所绑定的元素
+        mouseWheel: false, // 是否支持鼠标滚轮（提出来方便测试）
+        infiniteLimit: 25, // 数量极限（到达极限时，会调用getData方法）
+        cacheSize: 25, // 缓存数量
+        showLines: 10, // 显示的数量
+        empty: { // 默认的空对象
+            exists: false
+        }
+    },
+    // 需要监听的事件
+    events = ['beforeScrollStart', 'scrollCancel', 'scrollStart', 'scroll', 'scrollEnd', 'flick', 'zoomStart', 'zoomEnd'],
+    // 刷新 Scroll 的间隔
+    refreshTimeout = 100;
 
 
     /* getModel 方法 (来自oniui) */
@@ -96,10 +96,10 @@ define(['avalon'], function(avalon) {
         // 实现 ms-iscroll 指令
         avalon.bindingHandlers.iscroll = function(data, vmodels) {
             var element = data.element, // 绑定的 dom 节点
-                args = data.param.match(/[^, ]+/g), // 分析参数，用逗号分割，第一个为配置所对应的参数key（后面的参数以后拓展）
+                args = data.value.match(/[^, ]+/g), // 分析参数，用逗号分割，第一个为配置所对应的参数key（后面的参数以后拓展）
                 vm = vmodels[0], // 获取 VM
-                options = avalon.mix({}, DEFAULT_OPT, vm.iscroll, element.dataset, args ? vm[args[0]] : null), // merge 配置
-                id = options.id || (data.value !== '$' && data.value) || ('iscroll' + setTimeout('1')), // jshint ignore:line
+                options = avalon.mix({}, DEFAULT_OPT, vm.iscroll, element.dataset, args && args[1] ? vm[args[1]] : null), // merge 配置
+                id = options.id || (args && args[0]!== '$' && args[0]) || ('iscroll' + setTimeout('1')), // jshint ignore:line
                 son = element.children[0], // 儿子节点
                 grandSon = element.children[0] && element.children[0].children[0], // 孙子节点
                 eachAttr = son && getAttr(son, 'ms-each'), // 儿子节点是否有 ms-each
@@ -146,7 +146,7 @@ define(['avalon'], function(avalon) {
                         if (prevData !== void 0 && arr[prevData] && arr[prevData].$unwatch) {
                             arr[prevData].$unwatch(); // 取消原来的监听
                         }
-                        if (data !== void 0 && newArr[index]) {
+                        if (data !== void 0 && newArr[index] && arr[data]) {
                             newArr[index].$unwatch(); // 取消原来的监听
                             newArr.set(index, arr[data]); // 更新僵尸数组的数据
                             // 双向绑定原数组和僵尸数组的数组更改
@@ -158,14 +158,14 @@ define(['avalon'], function(avalon) {
                             });
                             // 记录双向绑定的索引
                             listenerLogs[el.dataset.index] = data;
-                        }
-                        // 判断是否是最后一个数据被渲染
-                        if (arr.length - 1 == data) {
-                            // 回调 getData 方法，获取新数据
-                            getData = getFunc(options.getData || 'getData', vmodels);
-                            if (getData) {
-                                // 参数 第一个实现在的数组长度（数据数） 第二个是至少取的条数
-                                getData(arr.length, options.cacheSize);
+                            // 判断是否是最后一个数据被渲染
+                            if (arr.length - 1 == data) {
+                                // 回调 getData 方法，获取新数据
+                                getData = getFunc(options.getData || 'getData', vmodels);
+                                if (getData) {
+                                    // 参数 第一个实现在的数组长度（数据数） 第二个是至少取的条数
+                                    getData(arr.length, options.cacheSize);
+                                }
                             }
                         }
                     }
@@ -176,6 +176,7 @@ define(['avalon'], function(avalon) {
                 vm.$watch(name, function() {
                     var arr = vm[name],
                         newArr = vm[realName],
+                        removeIndex = [],
                         i;
                     // 判断是否是第一次加载
                     if (scroll) {
@@ -207,11 +208,12 @@ define(['avalon'], function(avalon) {
                                     };
                                 })(i));  // jshint ignore:line
                             } else {
-                                // 如果元素数量不足一屏，则将多余的位置更改为 empty
-                                // 不可删除数组中相应元素，会造成 dom 更改，使 iscroll 获取节点出错
-                                newArr.set(i, options.empty);
+                                removeIndex.unshift(i);
                             }
                         }
+                        removeIndex.forEach(function(i) {
+                            newArr.removeAt(i);
+                        });
                         scroll.options.infiniteLimit = options.infiniteLimit;
                         scroll.scrollTo(0, 0, 0);
                         scroll.refresh();
@@ -219,6 +221,7 @@ define(['avalon'], function(avalon) {
                         // 配置数据和属性，创建 iScroll 对象
                         options.infiniteElements = options.infiniteElements || son.children; // 循环元素的选择器 或者 NodeList
                         newArr.pushArray(vm.$model[name].slice(0, options.showLines)); // 初始化僵尸数组的数据
+
                         scroll = vm.scrolls[id] = new IScroll(element, options); // 创建 IScroll 对象
                         scroll.updateCache(0, avalon.range(0, options.infiniteLimit)); // 给 IScroll 输入数据 (其实是原数组的索引)
                         bindEvents(vmodels, options, scroll); // 绑定事件

@@ -65,7 +65,7 @@
         <div ms-controller="test">
             <div id="scroller" ms-iscroll='$'>
                 <ul>
-                    <li ms-repeat="arr" ms-on-tap="view(el)">{{el.name}}</li>
+                    <li ms-repeat="arr" ms-on-tap="view(el)" ms-css-display="el.name ? 'block' : 'none'">{{el.name}}</li>
                 </ul>
             </div>
         </div>
@@ -104,7 +104,7 @@
                 };
             });
             setTimeout(function() {
-                test.arr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25].map(function(item){
+                test.arr = [1,2,3,4,5].map(function(item){
                     return {
                         name: 'item-' + item
                     };
