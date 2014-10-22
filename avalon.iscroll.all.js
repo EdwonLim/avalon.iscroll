@@ -1447,7 +1447,7 @@ define(['avalon'], function(avalon) {
             this.infiniteElements = typeof el == 'string' ? document.querySelectorAll(el) : el;
             this.infiniteLength = this.infiniteElements.length;
             this.infiniteMaster = this.infiniteElements[0];
-            this.infiniteElementHeight = this.infiniteMaster.offsetHeight || this.options.infiniteElementsHeight;
+            this.infiniteElementHeight = this.infiniteMaster ? this.infiniteMaster.offsetHeight : 0;
             this.infiniteHeight = this.infiniteLength * this.infiniteElementHeight;
 
             this.options.cacheSize = this.options.cacheSize || 1000;
