@@ -19,54 +19,13 @@ define(['avalon'], function(avalon) {
         mouseWheel: false, // 是否支持鼠标滚轮（提出来方便测试）
         infiniteLimit: 25, // 数量极限（到达极限时，会调用getData方法）
         cacheSize: 25, // 缓存数量
-        showLines: 10, // 显示的数量
-        empty: { // 默认的空对象
-            exists: false
-        }
+        showLines: 10, // 显示的数量,
+        getData: avalon.noop
     },
     // 需要监听的事件
     events = ['beforeScrollStart', 'scrollCancel', 'scrollStart', 'scroll', 'scrollEnd', 'flick', 'zoomStart', 'zoomEnd'],
     // 刷新 Scroll 的间隔
     refreshTimeout = 100;
-
-
-    /* getModel 方法 (来自oniui) */
-
-    function getChildVM(expr, vm, strLen) {
-        var t = vm, pre, _t;
-        for (var i = 0, len = expr.length; i < len; i++) {
-            var k = expr[i];
-            _t = t.$model || t;
-            if (typeof _t[k] !== 'undefined') {
-                pre = t;
-                t = _t[k];
-            } else {
-                return;
-            }
-        }
-        if (strLen > 1) {
-            return pre[k]; // jshint ignore:line
-        } else {
-            return pre;
-        }
-    }
-
-    function getModel(expr, vmodels){
-        var str = expr.split('.'),
-            strLen = str.length,
-            last = str[strLen-1];
-        if (str.length != 1) {
-            str.pop();
-        }
-        for (var i = 0, len = vmodels.length; i < len; i++) {
-            var ancestor = vmodels[i];
-            var child = getChildVM(str, ancestor, strLen);
-            if (typeof child !== 'undefined' && (child.hasOwnProperty(last) || Object.prototype.hasOwnProperty.call(child, last))) {
-                return [last, child, ancestor];
-            }
-        }
-        return null;
-    }
 
     // 获取 VM 对象内的对应方法
     function getFunc(name, vmodels) {
@@ -81,14 +40,20 @@ define(['avalon'], function(avalon) {
         })[0] || {}).name;
     }
 
+    // 触发事件
+    function dispatchEvent(el, type, args) {
+    	var evt = document.createEvent('HTMLEvents');
+    	evt.initEvent(type, true, true);
+        avalon.mix(evt, args);
+        el.dispatchEvent(evt);
+    }
+
     // 给vmodels绑定事件
-    function bindEvents(vmodels, options, scroll) {
+    function bindEvents(element, scroll) {
         events.forEach(function(eventName) {
-            // 如果配置了相关事件对应的方法名，则使用，否则使用事件名作为方法名。
-            var funcName = options[eventName] || eventName;
-            if (getFunc(funcName, vmodels)) {
-                scroll.on(eventName, getFunc(funcName, vmodels));
-            }
+            scroll.on(eventName, function() {
+                dispatchEvent(element, eventName.toLowerCase());
+            });
         });
     }
 
@@ -158,13 +123,15 @@ define(['avalon'], function(avalon) {
                             });
                             // 记录双向绑定的索引
                             listenerLogs[el.dataset.index] = data;
+
                             // 判断是否是最后一个数据被渲染
                             if (arr.length - 1 == data) {
                                 // 回调 getData 方法，获取新数据
-                                getData = getFunc(options.getData || 'getData', vmodels);
-                                if (getData) {
-                                    // 参数 第一个实现在的数组长度（数据数） 第二个是至少取的条数
-                                    getData(arr.length, options.cacheSize);
+                                // 参数 第一个实现在的数组长度（数据数） 第二个是至少取的条数
+                                if (typeof options.getData === 'function') {
+                                    options.getData(arr.length, options.cacheSize);
+                                } else if (typeof options.getData === 'string' && typeof vm[options.getData] === 'function') {
+                                    vm[options.getData](arr.length, options.cacheSize);
                                 }
                             }
                         }
@@ -224,7 +191,7 @@ define(['avalon'], function(avalon) {
 
                         scroll = vm.scrolls[id] = new IScroll(element, options); // 创建 IScroll 对象
                         scroll.updateCache(0, avalon.range(0, options.infiniteLimit)); // 给 IScroll 输入数据 (其实是原数组的索引)
-                        bindEvents(vmodels, options, scroll); // 绑定事件
+                        bindEvents(element, scroll); // 绑定事件
                     }
                 });
 
@@ -246,7 +213,7 @@ define(['avalon'], function(avalon) {
             } else {
                 // 普通创建 IScroll
                 scroll = vm.scrolls[id] = new IScroll(element, options);
-                bindEvents(vmodels, options, scroll);
+                bindEvents(element, scroll);
             }
 
 

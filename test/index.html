@@ -63,7 +63,7 @@
     <body>
         <h2>Avlon IScroll Test</h2>
         <div ms-controller="test">
-            <div id="scroller" ms-iscroll='$'>
+            <div id="scroller" ms-iscroll='$' ms-on-scrollstart="start">
                 <ul>
                     <li ms-repeat="arr" ms-on-tap="view(el)" ms-css-display="el.name ? 'block' : 'none'">{{el.name}}</li>
                 </ul>
@@ -81,30 +81,27 @@
                     // infiniteElements: '#scroller ul li',
                     infiniteLimit: 25,
                     showLines: 10,
-                    empty: {
-                        name: ''
+                    getData : function(start, count) {
+                        console.log('加载数据: start = ' + start + ' count = ' + count);
+                        setTimeout(function() {
+                            console.log('加载完成');
+                            for (var i = vm.arr.length; i < start + count; i ++) {
+                                test.arr.push({
+                                    name : 'item-' + (i + 1)
+                                });
+                            }
+                        }, 1000);
                     }
-                };
-                vm.getData = function(start, count) {
-                    console.log('加载数据: start = ' + start + ' count = ' + count);
-                    setTimeout(function() {
-                        console.log('加载完成');
-                        for (var i = vm.arr.length; i < start + count; i ++) {
-                            vm.arr.push({
-                                name : 'item-' + (i + 1)
-                            });
-                        }
-                    }, 1000);
                 };
                 vm.view = function(el) {
                     el.name += '#';
                 };
-                vm.scrollStart = function() {
-                    // console.log('scrollStart', vm.scrolls.scroll2, this);
+                vm.start = function() {
+                    console.log('scrollStart', this);
                 };
             });
             setTimeout(function() {
-                test.arr = [1,2,3,4,5].map(function(item){
+                test.arr = avalon.range(1,26).map(function(item){
                     return {
                         name: 'item-' + item
                     };
