@@ -1799,6 +1799,18 @@ define(['avalon'], function(avalon) {
                 // 普通创建 IScroll
                 scroll = vm.scrolls[id] = new IScroll(element, options);
                 bindEvents(element, scroll);
+
+                vm.$watch('$all', function() {
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                    timer = setTimeout(function() {
+                        if (scroll) {
+                            scroll.refresh();
+                        }
+                    }, refreshTimeout);
+                });
+
             }
 
 
