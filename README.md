@@ -13,12 +13,15 @@ IScroll GitHub & Documents: [https://github.com/cubiq/iscroll](https://github.co
 #### 1. 简介
 
 - Avalon makes love with IScroll.
-- 新增`ms-iscroll`命令，使`Avalon`用户更容易使用`iScroll`。
+- 新增指令，使`Avalon`用户更容易使用`iScroll`。
 - 对于`ms-repeat`或`ms-each`，支持`infinite`滚动。
 
-#### 2. 命令
+#### 2. 使用方法
 
-> ms-iscroll="id, optName"
+当监听 `beforescrollstart`, `scrollcancel`, `scrollstart`, `scroll`, `scrollend`, `flick`, `zoomstart`, `zoomend` 中一个或多个事件时，会自动初始化`iscroll`。
+
+> 辅助指令
+> data-scroll="id, optName"
 
 - `id`: 将通过`id`挂在`vmodel`的`scrolls`对象上，便于用户访问`IScroll`对象。
 - `optName`: 配置属性的名称，在`vmodel`上寻找对应的属性值，作为配置。
@@ -33,7 +36,7 @@ PS： `id`可用`$`占位，`options`也可使用`data-optionKey='optionValue'`�
 
 ```html
     <div ms-controller="test">
-        <div ms-iscroll="scroll1, $opt">
+        <div ms-on-scroll="scroll" data-scroll="scroll1, $opt">
             <ul>
                 <li></li>
                 ...
@@ -52,6 +55,9 @@ PS： `id`可用`$`占位，`options`也可使用`data-optionKey='optionValue'`�
             vm.$opt = {
                 ... // iScroll 配置
             }
+            vm.scroll = function() {
+
+            };
             ...
         });
 
